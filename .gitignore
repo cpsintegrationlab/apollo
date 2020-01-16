@@ -27,7 +27,8 @@ modules/perception/cuda_util/cmake_build
 .idea
 
 # Vscode files
-.vscode
+.vscode/*
+!.vscode/tasks.json
 
 # atom.io files
 *.gch
