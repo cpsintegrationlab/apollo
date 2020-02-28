@@ -121,5 +121,17 @@ module_config {
         }
       }
     }
+
+    components {
+      class_name : "ImageDecompressComponent"
+      config {
+        name : "camera_depth_decompress"
+        config_file_path : "/apollo/modules/drivers/tools/image_decompress/conf/camera_depth_conf.pb.txt"
+        readers {
+          channel: "/apollo/sensor/camera/depth/image/compressed"
+          pending_queue_size: 10
+        }
+      }
+    }
 }
 
