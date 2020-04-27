@@ -17,6 +17,10 @@ generated_data_warehouse.conf
 modules/common/data/ssl_keys
 modules/perception/cuda_util/cmake_build
 
+# macOS files
+.DS_Store
+.localized
+
 # Eclipse IDE files
 .project
 .cproject
