@@ -116,7 +116,7 @@ function generate_build_targets() {
     BUILD_TARGETS=`bazel query //modules/... except //modules/perception/... union //cyber/...`
     ;;
   *)
-    BUILD_TARGETS=`bazel query //modules/... union //cyber/...`
+    BUILD_TARGETS=`bazel query //lgsvl_pkgs/lgsvl_msgs/... union //modules/... union //cyber/...`
   esac
 
   if [ $? -ne 0 ]; then
@@ -214,6 +214,7 @@ function cibuild_extended() {
     //modules/localization/...
     //modules/map/...
     //modules/third_party_perception/...
+    //lgsvl_pkgs/lgsvl_msgs/...
     "
 
   bazel build $JOB_ARG $DEFINES $@ $BUILD_TARGETS
@@ -488,7 +489,7 @@ function citest_basic() {
   source cyber/setup.bash
 
   BUILD_TARGETS="
-    `bazel query //modules/... union //cyber/...`
+    `bazel query //modules/... union //cyber/... union //lgsvl_pkgs/lgsvl_msgs/...`
   "
 
   JOB_ARG="--jobs=$(nproc) --ram_utilization_factor 80"
@@ -524,7 +525,7 @@ function citest_extended() {
   source cyber/setup.bash
 
   BUILD_TARGETS="
-    `bazel query //modules/planning/... union //modules/common/... union //cyber/...`
+    `bazel query //modules/planning/... union //modules/common/... union //cyber/... union //lgsvl_pkgs/lgsvl_msgs/...`
     `bazel query //modules/prediction/... union //modules/control/...`
   "
 
@@ -560,7 +561,7 @@ function citest() {
 }
 
 function run_cpp_lint() {
-  BUILD_TARGETS="`bazel query //modules/... except //modules/tools/visualizer/... union //cyber/...`"
+  BUILD_TARGETS="`bazel query //lgsvl_pkgs/lgsvl_msgs/... union //modules/... except //modules/tools/visualizer/... union //cyber/...`"
   bazel test --config=cpplint -c dbg $BUILD_TARGETS
 }
 
