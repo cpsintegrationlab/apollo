@@ -106,10 +106,10 @@
     "params": {
       "LaserCount": 32,
       "MinDistance": 0.5,
-      "MaxDistance": 50,
+      "MaxDistance": 100,
       "RotationFrequency": 10,
-      "MeasurementsPerRotation": 870,
-      "FieldOfView": 40,
+      "MeasurementsPerRotation": 360,
+      "FieldOfView": 41.33,
       "CenterAngle": 10,
       "Compensated": true,
       "PointColor": "#ff000000",
