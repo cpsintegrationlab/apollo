@@ -16,6 +16,23 @@
     }
   },
   {
+    "type": "GPS Odometry",
+    "name": "GPS Odometry",
+    "params": {
+      "Frequency": 12.5,
+      "Topic": "/apollo/sensor/gnss/odometry",
+      "Frame": "gps"
+    },
+    "transform": {
+      "x": 0,
+      "y": 0,
+      "z": -1.348649,
+      "pitch": 0,
+      "yaw": 0,
+      "roll": 0
+    }
+  },
+  {
     "type": "Lidar",
     "name": "Lidar",
     "params": {
