@@ -6,4 +6,4 @@
 [submodule "safety_layer"]
 	path = modules/safety_layer
 	url = ../../safety_layer/cyber_module.git
-	branch = depth_clustering
+	branch = devel
