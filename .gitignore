@@ -16,6 +16,10 @@ WORKSPACE
 generated_data_warehouse.conf
 modules/common/data/ssl_keys
 modules/perception/cuda_util/cmake_build
+modules/drivers/velodyne/params/*.yaml
+modules/localization/msf/params/velodyne_params/*.yaml
+modules/perception/data/params/*.yaml
+modules/perception/data/params/*.launch
 
 # macOS files
 .DS_Store
