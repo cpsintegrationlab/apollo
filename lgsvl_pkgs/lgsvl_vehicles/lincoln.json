@@ -197,7 +197,7 @@
 		"type":"Vehicle Control",
 		"name":"Apollo Car Control",
 		"params":{
-			"Topic":"/apollo/safety_layer/control"
+			"Topic":"/apollo/safety_layer/decision/control"
 		}
 	}
 ]
