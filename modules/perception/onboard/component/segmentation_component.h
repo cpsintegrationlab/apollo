@@ -15,6 +15,7 @@
  *****************************************************************************/
 #pragma once
 
+#include <fstream>
 #include <memory>
 #include <string>
 
@@ -32,14 +33,26 @@ namespace onboard {
 
 class SegmentationComponent : public cyber::Component<drivers::PointCloud> {
  public:
-  SegmentationComponent() : segmentor_(nullptr) {}
+  SegmentationComponent() : segmentor_(nullptr), log_(true), log_file_name_timing_(
+	  "/apollo/data/log/perception.segmentation_timing.log.txt")
+  {
+  }
 
-  ~SegmentationComponent() = default;
+  ~SegmentationComponent()
+  {
+    log_file_timing_.close();
+  };
 
   bool Init() override;
   bool Proc(const std::shared_ptr<drivers::PointCloud>& message) override;
 
  private:
+	void
+	createLogFileTiming();
+
+	void
+	logTiming(const int& timing);
+
   bool InitAlgorithmPlugin();
   bool InternalProc(
       const std::shared_ptr<const drivers::PointCloud>& in_message,
@@ -57,6 +70,10 @@ class SegmentationComponent : public cyber::Component<drivers::PointCloud> {
   TransformWrapper lidar2world_trans_;
   std::unique_ptr<lidar::LidarObstacleSegmentation> segmentor_;
   std::shared_ptr<apollo::cyber::Writer<LidarFrameMessage>> writer_;
+
+	bool log_;
+	std::ofstream log_file_timing_;
+	const std::string log_file_name_timing_;
 };
 
 CYBER_REGISTER_COMPONENT(SegmentationComponent);

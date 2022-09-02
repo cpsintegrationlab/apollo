@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *****************************************************************************/
+#include <chrono>
+
 #include "modules/perception/onboard/component/segmentation_component.h"
 
 #include "modules/perception/common/sensor_manager/sensor_manager.h"
@@ -49,6 +51,9 @@ bool SegmentationComponent::Init() {
     AERROR << "Failed to init segmentation component algorithm plugin.";
     return false;
   }
+
+  createLogFileTiming();
+
   return true;
 }
 
@@ -61,12 +66,59 @@ bool SegmentationComponent::Proc(
   std::shared_ptr<LidarFrameMessage> out_message(new (std::nothrow)
                                                      LidarFrameMessage);
 
+  const auto time_point_start = std::chrono::high_resolution_clock::now();
   bool status = InternalProc(message, out_message);
+  const auto time_point_end = std::chrono::high_resolution_clock::now();
+
+  const auto duration = time_point_end - time_point_start;
+  const auto timing = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+  logTiming(timing);
+
   if (status) {
     writer_->Write(out_message);
     AINFO << "Send lidar segment output message.";
   }
   return status;
+}
+
+void
+SegmentationComponent::createLogFileTiming()
+{
+	if (!log_)
+    {
+        return;
+    }
+
+    log_file_timing_.open(log_file_name_timing_, std::fstream::out | std::fstream::trunc);
+
+    if (log_file_timing_.is_open() && log_file_timing_.good())
+    {
+        log_file_timing_ << "Timing (us)" << std::endl;
+    }
+    else
+    {
+        AERROR << "Failed to open timing log file.";
+    }
+}
+
+void
+SegmentationComponent::logTiming(const int& timing)
+{
+	if (!log_)
+    {
+        return;
+    }
+
+	AINFO << "Logging timing.";
+
+    if (log_file_timing_.is_open() && log_file_timing_.good())
+    {
+        log_file_timing_ << timing << std::endl;
+    }
+    else
+    {
+        AERROR << "Invalid timing log file stream.";
+    }
 }
 
 bool SegmentationComponent::InitAlgorithmPlugin() {
