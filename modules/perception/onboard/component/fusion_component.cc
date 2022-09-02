@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *****************************************************************************/
+#include <chrono>
+
 #include "modules/perception/onboard/component/fusion_component.h"
 
 #include "modules/perception/base/object_pool_types.h"
@@ -47,6 +49,9 @@ bool FusionComponent::Init() {
       comp_config.output_obstacles_channel_name());
   inner_writer_ = node_->CreateWriter<SensorFrameMessage>(
       comp_config.output_viz_fused_content_channel_name());
+
+  createLogFileTiming();
+
   return true;
 }
 
@@ -60,7 +65,15 @@ bool FusionComponent::Proc(const std::shared_ptr<SensorFrameMessage>& message) {
                                                        PerceptionObstacles);
   std::shared_ptr<SensorFrameMessage> viz_message(new (std::nothrow)
                                                       SensorFrameMessage);
+
+  const auto time_point_start = std::chrono::high_resolution_clock::now();
   bool status = InternalProc(message, out_message, viz_message);
+  const auto time_point_end = std::chrono::high_resolution_clock::now();
+
+  const auto duration = time_point_end - time_point_start;
+  const auto timing = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+  logTiming(timing);
+
   if (status) {
     // TODO(conver sensor id)
     if (message->sensor_id_ != fusion_main_sensor_) {
@@ -78,6 +91,46 @@ bool FusionComponent::Proc(const std::shared_ptr<SensorFrameMessage>& message) {
     }
   }
   return status;
+}
+
+void
+FusionComponent::createLogFileTiming()
+{
+	if (!log_)
+    {
+        return;
+    }
+
+    log_file_timing_.open(log_file_name_timing_, std::fstream::out | std::fstream::trunc);
+
+    if (log_file_timing_.is_open() && log_file_timing_.good())
+    {
+        log_file_timing_ << "Timing (us)" << std::endl;
+    }
+    else
+    {
+        AERROR << "Failed to open timing log file.";
+    }
+}
+
+void
+FusionComponent::logTiming(const int& timing)
+{
+	if (!log_)
+    {
+        return;
+    }
+
+	AINFO << "Logging timing.";
+
+    if (log_file_timing_.is_open() && log_file_timing_.good())
+    {
+        log_file_timing_ << timing << std::endl;
+    }
+    else
+    {
+        AERROR << "Invalid timing log file stream.";
+    }
 }
 
 bool FusionComponent::InitAlgorithmPlugin() {

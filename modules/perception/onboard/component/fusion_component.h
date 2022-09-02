@@ -15,6 +15,7 @@
  *****************************************************************************/
 #pragma once
 
+#include <fstream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -33,12 +34,25 @@ namespace onboard {
 
 class FusionComponent : public cyber::Component<SensorFrameMessage> {
  public:
-  FusionComponent() = default;
-  ~FusionComponent() = default;
+  FusionComponent() : log_(true), log_file_name_timing_(
+	  "/apollo/data/log/perception.fusion_timing.log.txt")
+  {
+
+  }
+  ~FusionComponent()
+  {
+    log_file_timing_.close();
+  }
   bool Init() override;
   bool Proc(const std::shared_ptr<SensorFrameMessage>& message) override;
 
  private:
+  void
+	createLogFileTiming();
+
+	void
+	logTiming(const int& timing);
+
   bool InitAlgorithmPlugin();
   bool InternalProc(const std::shared_ptr<SensorFrameMessage const>& in_message,
                     std::shared_ptr<PerceptionObstacles> out_message,
@@ -57,6 +71,10 @@ class FusionComponent : public cyber::Component<SensorFrameMessage> {
   map::HDMapInput* hdmap_input_ = nullptr;
   std::shared_ptr<apollo::cyber::Writer<PerceptionObstacles>> writer_;
   std::shared_ptr<apollo::cyber::Writer<SensorFrameMessage>> inner_writer_;
+
+  bool log_;
+	std::ofstream log_file_timing_;
+	const std::string log_file_name_timing_;
 };
 
 CYBER_REGISTER_COMPONENT(FusionComponent);
